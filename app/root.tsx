@@ -1,12 +1,25 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import { rootAuthLoader } from "@clerk/remix/ssr.server";
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "@remix-run/react";
+import { getAuth, rootAuthLoader } from "@clerk/remix/ssr.server";
 import { ClerkApp, ClerkErrorBoundary } from "@clerk/remix";
 
-export const links: LinksFunction = () => [...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])];
+export const links: LinksFunction = () => [
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+];
 
-export const loader: LoaderFunction = (args) => rootAuthLoader(args);
+export const loader: LoaderFunction = async (args) => {
+  const auth = await getAuth(args);
+  console.log("auth in root loader", auth);
+  return rootAuthLoader(args);
+};
 
 export const ErrorBoundary = ClerkErrorBoundary();
 
